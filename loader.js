@@ -39,6 +39,11 @@ function loadHome () {
 function loadReceive() {
   clear();
   let main = document.querySelector("main");
+  let userID = document.createElement("h2");
+  userID.id = "userID";
+  userID.textContent = localStorage.getItem("ID");
+  main.appendChild(userID);
+
   let inputAmount = document.createElement("input");
   inputAmount.setAttribute("type","number");
   inputAmount.setAttribute("placeholder","Type Amount");
@@ -124,8 +129,9 @@ function loadValidationArea(content){
   let result = content.split('|');
   if (result == content) return;
   let validationArea = document.querySelector("#validationArea");
-  validationArea.clear();
+  validationArea.innerHTML = "";
   validationArea.style.display = "block";
+  alert(result[0]);
   let receiverSpan = document.createElement("span");
   receiverSpan.id = "receiverID";
   receiverSpan.textContent = result[0];
