@@ -1,6 +1,7 @@
 load();
 
 function load() {
+  loadHome ();
   let homeMenu = document.querySelector("#home");
   homeMenu.addEventListener("click",function(){
     loadHome();
