@@ -115,8 +115,8 @@ function InstaScan () {
       });
       scanner.start(cameras[localStorage.getItem("camSelected")]);
     }
-    if (cameras.length == 1 ) {
-      localStorage.setItem("camSelected","0");
+    if (cameras.length === 1 ) {
+      //localStorage.setItem("camSelected","0");
       scanner.start(cameras[localStorage.getItem("camSelected")]);
     } else {
       console.error('No cameras found.');
