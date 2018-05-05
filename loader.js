@@ -106,18 +106,18 @@ function InstaScan () {
   Instascan.Camera.getCameras().then(function (cameras) {
     if (cameras.length > 1) {
       if (localStorage.getItem("camSelected") == "")
-        localStorage.setItem("camSelected","1");
+        localStorage.setItem("camSelected", 1);
       document.querySelector("#changeButtonArea").style.display ="block";
       let element = document.querySelector("#switchCam");  
       element.addEventListener("click", function () {
         localStorage.setItem("camSelected",
-          (localStorage.getItem("camSelected")==0) ? 1 :0);
+          (localStorage.getItem("camSelected") === 0) ? 1 :0);
         scanner.start(cameras[localStorage.getItem("camSelected")]);
       });
       scanner.start(cameras[localStorage.getItem("camSelected")]);
     }
     if (cameras.length == 1 ) {
-      localStorage.setItem("camSelected","0");
+      localStorage.setItem("camSelected",0);
       scanner.start(cameras[localStorage.getItem("camSelected")]);
     } else {
       console.error('No cameras found.');
