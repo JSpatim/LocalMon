@@ -105,9 +105,7 @@ function InstaScan () {
   });
   Instascan.Camera.getCameras().then(function (cameras) {
     if (cameras.length > 1) {
-      if (localStorage.getItem("camSelected") != "") {
-        localStorage.setItem("camSelected","1");
-      }
+      localStorage.setItem("camSelected","1");
       document.querySelector("#changeButtonArea").style.display ="block";
       let element = document.querySelector("#switchCam");  
       element.addEventListener("click", function (content) {
