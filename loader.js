@@ -41,7 +41,7 @@ function loadReceive() {
   let main = document.querySelector("main");
   let userID = document.createElement("h2");
   userID.id = "userID";
-  userID.textContent = localStorage.getItem("ID");
+  userID.textContent = "USER ID: " + localStorage.getItem("ID");
   main.appendChild(userID);
 
   let inputAmount = document.createElement("input");
