@@ -104,7 +104,7 @@ function InstaScan () {
     loadValidationArea(content);
   });
   Instascan.Camera.getCameras().then(function (cameras) {
-    if (cameras.length == 2) {
+    if (cameras.length > 1) {
       alert(localStorage.getItem("camSelected"));
       if (localStorage.getItem("camSelected") == "")
         localStorage.setItem("camSelected", 1);
