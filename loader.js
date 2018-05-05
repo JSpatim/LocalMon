@@ -1,4 +1,26 @@
-loadSend();
+load();
+
+function load() {
+  let homeMenu = document.querySelector("#home");
+  homeMenu.addEventListener("click",function(){
+    loadHome();
+    document.querySelector(".demo-drawer").classList.remove("is-visible");
+    document.querySelector(".mdl-layout__obfuscator").classList.remove("is-visible");
+    
+  });
+  let sendMenu = document.querySelector("#sendMenu");
+  sendMenu.addEventListener("click",function(){
+    loadSend();
+    document.querySelector(".demo-drawer").classList.remove("is-visible");
+    document.querySelector(".mdl-layout__obfuscator").classList.remove("is-visible");
+  });
+  let receiveMenu = document.querySelector("#receiveMenu");
+  receiveMenu.addEventListener("click",function(){
+    loadReceive();
+    document.querySelector(".demo-drawer").classList.remove("is-visible");
+    document.querySelector(".mdl-layout__obfuscator").classList.remove("is-visible");
+  });
+}
 
 function loadHome () {
   //Generation d'ID
@@ -15,12 +37,49 @@ function loadHome () {
 }
 
 function loadReceive() {
+  clear();
+  let main = document.querySelector("main");
+  let inputAmount = document.createElement("input");
+  inputAmount.setAttribute("type","number");
+  inputAmount.setAttribute("placeholder","Type Amount");
+  inputAmount.setAttribute("step","10");
+  inputAmount.id = "amountPrice";
+  main.appendChild(inputAmount);
+  let generateCode = document.createElement("button");
+  generateCode.textContent = "Generate";
+  main.appendChild(generateCode);
+  generateCode.addEventListener("click", function() {
+    makeCode();
+  });
+
+  let qrcode = document.createElement("div");
+  qrcode.id = "qrcode";
+  main.appendChild(qrcode);
+  
+
+  
+  function makeCode () {
+    let qrcode = new QRCode(document.querySelector("#qrcode"), {
+      width : 100,
+      height : 100
+    });
+    let inputAmount = document.querySelector("#amountPrice");
+    
+    if (!inputAmount.value) {
+      alert("Input an amount");
+      inputAmount.focus();
+      return;
+    }
+    qrcode.makeCode(localStorage.getItem("ID") + "|"+ inputAmount.value);
+  }
   //Formulaire Montant
   //QRCode
   //Bouton reset
 }
 
 function loadSend() {
+  //event.preventDefault();
+  clear();
   let main = document.querySelector("main");
   let title = document.createElement("h2");
   title.textContent = "Scan the receiver transaction QRCode";
@@ -95,7 +154,7 @@ function loadValidationArea(content){
 
 function clear() {
   let element = document.querySelector("main");
-  main.clear();
+  element.innerHTML ="";
 }
 
 function InstaScan () {
@@ -118,7 +177,6 @@ function InstaScan () {
     if (cameras.length == 1 ) {
       localStorage.setItem("camSelected","0");
       scanner.start(cameras[localStorage.getItem("camSelected")]);
-      //scanner.start(cameras[0]);
     } else {
       console.error('No cameras found.');
     }
