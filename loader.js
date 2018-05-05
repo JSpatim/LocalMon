@@ -113,7 +113,7 @@ function InstaScan () {
           (localStorage.getItem("camSelected") == "0") ? "1" :"0");
         scanner.start(cameras[localStorage.getItem("camSelected")]);
       });
-      scanner.start(cameras[localStorage.getItem("camSelected")]);*/
+      scanner.start(cameras[localStorage.getItem("camSelected")]);
     }
     if (cameras.length == 1 ) {
       localStorage.setItem("camSelected","0");
