@@ -1,7 +1,31 @@
+var config = {
+  apiKey: "AIzaSyDllLSVeNNJaGX2WP5xr79aG9Sg_8cAI4c",
+  authDomain: "localmon-6d53a.firebaseapp.com",
+  databaseURL: "https://localmon-6d53a.firebaseio.com",
+  projectId: "localmon-6d53a",
+  storageBucket: "localmon-6d53a.appspot.com",
+  messagingSenderId: "767627102257"
+};
+firebase.initializeApp(config);
+
 load();
 
 function load() {
-  loadHome ();
+  //Generation d'ID
+  if(localStorage.getItem("ID") == null) {
+    localStorage.setItem("ID", guid());
+    localStorage.setItem("euro", 100);
+    let userData = {
+      userid: localStorage.getItem("ID"),
+      solde: localStorage.getItem("euro")
+    };
+  
+    let newUserKey = firebase.database().ref().child('userID').push().key; 
+    var updates = {};
+    updates['/users/' + newUserKey] = userData;
+    firebase.database().ref().update(updates);
+  }
+
   let homeMenu = document.querySelector("#home");
   homeMenu.addEventListener("click",function(){
     loadHome();
@@ -21,20 +45,31 @@ function load() {
     document.querySelector(".demo-drawer").classList.remove("is-visible");
     document.querySelector(".mdl-layout__obfuscator").classList.remove("is-visible");
   });
+  loadHome ();
+  
 }
 
 function loadHome () {
-  //Generation d'ID
-  if(localStorage.getItem("ID") == null) {
-    localStorage.setItem("ID", guid());
-    localStorage.setItem("euro", 100);
-    //Insertion en base
-  }
-  //Jauge
-  //Bouton de conversion
-  //Waiting
-  //Prix en euros et en Coin
-  //Collecte du solde
+  clear();
+  let main = document.querySelector("main");
+  let title = document.createElement("h2");
+  title.id ="homeTitle";
+  title.textContent = "Votre solde actuel de Campos: ";
+  main.appendChild(title);
+
+  let soldeValue = document.createElement("h3");
+  soldeValue.id ="soldeValue";
+
+  var usersRef = firebase.database().ref('users');
+  usersRef.on('value', function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        var childData = childSnapshot.val();
+        if(childData.userid === localStorage.getItem("ID")) {       
+          soldeValue.textContent = childData.solde;
+          main.appendChild(soldeValue);
+        }
+      });
+  });
 }
 
 function loadReceive() {
@@ -42,7 +77,7 @@ function loadReceive() {
   let main = document.querySelector("main");
   let userID = document.createElement("h2");
   userID.id = "userID";
-  userID.textContent = "USER ID: " + localStorage.getItem("ID");
+  userID.textContent = "Mon identifiant: " + localStorage.getItem("ID");
   main.appendChild(userID);
 
   let inputAmount = document.createElement("input");
@@ -78,13 +113,9 @@ function loadReceive() {
     }
     qrcode.makeCode(localStorage.getItem("ID") + "|"+ inputAmount.value);
   }
-  //Formulaire Montant
-  //QRCode
-  //Bouton reset
 }
 
 function loadSend() {
-  //event.preventDefault();
   clear();
   let main = document.querySelector("main");
   let title = document.createElement("h2");
@@ -132,14 +163,13 @@ function loadValidationArea(content){
   let validationArea = document.querySelector("#validationArea");
   validationArea.innerHTML = "";
   validationArea.style.display = "block";
-  alert(result[0]);
   let receiverSpan = document.createElement("span");
   receiverSpan.id = "receiverID";
   receiverSpan.textContent = result[0];
   validationArea.appendChild(receiverSpan);
   let amount = document.createElement("span");
   amount.id = "amountSpan";
-  amount.textContent = result[0];
+  amount.textContent = result[1];
   validationArea.appendChild(amount);
 
   let validateButton = document.createElement("button");
@@ -147,14 +177,14 @@ function loadValidationArea(content){
   validateButton.innerHTML = '<i class="material-icons">checked_icon</i>';
   validationArea.appendChild(validateButton);
   validateButton.addEventListener("click",function() {
-    //send transac
+    transaction(result[0],localStorage.getItem("ID"),result[1]);
   });
   let cancelButton = document.createElement("button");
   cancelButton.className="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored";
   cancelButton.innerHTML = '<i class="material-icons">cancel_icon</i>';
   validationArea.appendChild(cancelButton);
   cancelButton.addEventListener("click",function() {
-    validationArea.clear();
+    validationArea.innerHTML="";
     validationArea.style.display = "none";
   });
 }
@@ -199,4 +229,40 @@ function guid() {
       .substring(1);
   }
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+}
+
+
+function writeUserAmount(userId, newSolde) {
+  firebase.database().ref('users/' + userId).set({
+    userID: userId,
+    solde: newSolde
+  });
+}
+
+function transaction(receiverID, senderID, amount)
+{
+  var updates = {};
+  var usersRef = firebase.database().ref('users');
+  usersRef.on('value', function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        var childData = childSnapshot.val();
+        let actualKey = childSnapshot.key;
+        if(childData.userid === receiverID) {
+          let receiverData = {
+            solde: childData.solde + amount,
+            userid: receiverID
+          };
+          updates['/users/' + actualKey] = receiverData; 
+        }
+        if(childData.userid === senderID) {
+          let senderData = {
+            solde: childData.solde - amount,
+            userid: senderID
+          };
+          updates['/users/' + actualKey] = senderData; 
+        }
+      });
+      firebase.database().ref().update(updates);
+      loadHome();
+  });
 }
