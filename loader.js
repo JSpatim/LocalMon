@@ -9,7 +9,10 @@ var config = {
 firebase.initializeApp(config);
 
 load();
-
+document.querySelector("#resetAccount").addEventListener("click",function() {
+  localStorage.clear();
+  load();
+});
 function load() {
   //Generation d'ID
   if(localStorage.getItem("ID") == null) {
@@ -24,6 +27,7 @@ function load() {
     var updates = {};
     updates['/users/' + newUserKey] = userData;
     firebase.database().ref().update(updates);
+    console.log("nouveau user");
   }
 
   let homeMenu = document.querySelector("#home");
@@ -232,18 +236,10 @@ function guid() {
 }
 
 
-function writeUserAmount(userId, newSolde) {
-  firebase.database().ref('users/' + userId).set({
-    userID: userId,
-    solde: newSolde
-  });
-}
-
-function transaction(receiverID, senderID, amount)
-{
+function transaction(receiverID, senderID, amount){
   var updates = {};
   var usersRef = firebase.database().ref('users');
-  usersRef.on('value', function(snapshot) {
+  usersRef.once('value', function(snapshot) {
       snapshot.forEach(function(childSnapshot) {
         var childData = childSnapshot.val();
         let actualKey = childSnapshot.key;
@@ -262,6 +258,7 @@ function transaction(receiverID, senderID, amount)
           updates['/users/' + actualKey] = senderData; 
         }
       });
+
       firebase.database().ref().update(updates);
       loadHome();
   });
