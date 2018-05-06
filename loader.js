@@ -211,9 +211,7 @@ function InstaScan () {
         scanner.start(cameras[localStorage.getItem("camSelected")]);
         break;
       case 2:
-        if (localStorage.getItem("camSelected") == ""){
-          localStorage.setItem("camSelected","1");
-        }
+        localStorage.setItem("camSelected","1");
         document.querySelector("#changeButtonArea").style.display ="block";
         let element = document.querySelector("#switchCam");  
         element.addEventListener("click", function () {
